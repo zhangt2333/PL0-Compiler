@@ -59,7 +59,6 @@ const SymbolType/* 关键字 */
                 MUL         = SymbolType("*", 23),
                 DIV         = SymbolType("/", 24),
                 /* 界符 */
-                COLON       = SymbolType(":", 25),
                 CEQU        = SymbolType(":=", 26),
                 COMMA       = SymbolType(",", 27),
                 SEMIC       = SymbolType(";", 28),

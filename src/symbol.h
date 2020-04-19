@@ -78,7 +78,6 @@ const std::unordered_map<std::string, Symbol> SIGN_MAP({
     {SYMBOL::MUL.name,   Symbol(SYMBOL::MUL)},
     {SYMBOL::DIV.name,   Symbol(SYMBOL::DIV)},
     /* 界符 */
-    {SYMBOL::COLON.name, Symbol(SYMBOL::COLON)},
     {SYMBOL::CEQU.name,  Symbol(SYMBOL::CEQU)},
     {SYMBOL::COMMA.name, Symbol(SYMBOL::COMMA)},
     {SYMBOL::SEMIC.name, Symbol(SYMBOL::SEMIC)},
