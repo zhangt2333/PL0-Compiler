@@ -39,6 +39,20 @@ public:
         return os;
     }
 
+    const SymbolType &getSymbolType() const
+    {
+        return symbolType;
+    }
+
+    const std::string &getValue() const
+    {
+        return value;
+    }
+
+    int getNumber() const
+    {
+        return number;
+    }
 private:
     SymbolType symbolType;
     std::string value;

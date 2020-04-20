@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     while(!lexer.isEOF())
     {
         Symbol symbol = lexer.getSymbol();
-        std::cout << symbol << std::endl;
+        std::cout << symbol << "\n";
     }
     return 0;
 }

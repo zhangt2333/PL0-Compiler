@@ -28,6 +28,16 @@ public:
         os << "[name: " << type.name << ", id: " << type.id << "]";
         return os;
     }
+
+    bool operator==(const SymbolType &rhs) const
+    {
+        return name == rhs.name && id == rhs.id;
+    }
+
+    bool operator!=(const SymbolType &rhs) const
+    {
+        return !(rhs == *this);
+    }
 };
 
 namespace SYMBOL {
