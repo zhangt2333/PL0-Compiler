@@ -10,6 +10,8 @@
 
 
 #include "lexer.h"
+#include "symbolTable.h"
+#include "code.h"
 
 class parser
 {
@@ -18,13 +20,15 @@ class parser
     int address = 3;
     SymbolType nowSymbolType = SYMBOL::ILLEGAL;
     Symbol nowSymbol = Symbol(nowSymbolType);
+    SymbolTable symbolTable;
+    std::vector<Code> codeTable;
 public:
     explicit parser(Lexer &lexer);
 
 private:
-
     void advance();
     void addressAdvance();
+    void addressReset();
 
     // 〈程序〉→〈分程序〉
     void program();

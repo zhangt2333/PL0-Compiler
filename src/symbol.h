@@ -23,14 +23,6 @@ class Symbol
 public:
     explicit Symbol(SymbolType symbolType): symbolType(std::move(symbolType))
     {
-        this->number = 0;
-    }
-    Symbol(SymbolType symbolType, std::string value): symbolType(std::move(symbolType)), value(std::move(value))
-    {
-        this->number = 0;
-    }
-    Symbol(SymbolType symbolType, int number): symbolType(std::move(symbolType)), number(number)
-    {
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Symbol &symbol)
@@ -53,10 +45,32 @@ public:
     {
         return number;
     }
+
+    int getLevel() const
+    {
+        return level;
+    }
+
+    int getAddress() const
+    {
+        return address;
+    }
+
+    void setLevel(int _level)
+    {
+        this->level = _level;
+    }
+
+    void setAddress(int _address)
+    {
+        this->address = _address;
+    }
 private:
     SymbolType symbolType;
-    std::string value;
-    int number;
+    std::string value = "";
+    int number = -1;
+    int level = -1;
+    int address = -1;
 };
 
 namespace SYMBOL {
