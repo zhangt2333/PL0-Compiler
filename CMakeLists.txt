@@ -16,6 +16,10 @@ set(SOURCE_FILES
         src/lexer.h
         src/symbolType.h
         src/symbol.h
-        src/utils.h)
+        src/utils.h
+        src/parser.cpp
+        src/parser.h
+        src/exceptionHandler.h
+        )
 
 add_executable(PL0_Compiler ${SOURCE_FILES} src/main.cpp)
