@@ -59,11 +59,11 @@ const SymbolType/* 关键字 */
                 ODD         = SymbolType("odd", 14),
                 /* 算符 */
                 EQU         = SymbolType("=", 15),
-                LE          = SymbolType("<", 16),
+                LS          = SymbolType("<", 16),
                 LEQ         = SymbolType("<=", 17),
                 GT          = SymbolType(">", 18),
                 GEQ         = SymbolType(">=", 19),
-                NEQ         = SymbolType("<>", 20),
+                NEQ         = SymbolType("#", 20),
                 ADD         = SymbolType("+", 21),
                 SUB         = SymbolType("-", 22),
                 MUL         = SymbolType("*", 23),

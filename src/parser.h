@@ -21,14 +21,14 @@ class parser
     SymbolType nowSymbolType = SYMBOL::ILLEGAL;
     Symbol nowSymbol = Symbol(nowSymbolType);
     SymbolTable symbolTable;
-    std::vector<Code> codeTable;
+    std::vector<Code*> codeTable;
 public:
     explicit parser(Lexer &lexer);
 
 private:
     void advance();
-    void addressAdvance();
     void addressReset();
+    int getCodeAddress();
 
     // 〈程序〉→〈分程序〉
     void program();
@@ -45,27 +45,32 @@ private:
     // 〈语句〉 → 〈赋值语句〉|〈条件语句〉|〈当型循环语句〉|〈过程调用语句〉|〈读语句〉|〈写语句〉|〈复合语句〉|〈空〉
     void statement();
     // 〈赋值语句〉 → 〈标识符〉:=〈表达式〉
-    void assignStatement();
+    bool assignStatement();
     // 〈条件语句〉 → if〈条件〉then〈语句〉
-    void ifStatement();
+    bool ifStatement();
     // 〈当型循环语句〉 → while〈条件〉do〈语句〉
-    void whileStatement();
+    bool whileStatement();
     // 〈过程调用语句〉 → call〈标识符〉
-    void callStatement();
+    bool callStatement();
     // 〈读语句〉 → read(〈标识符〉{ ，〈标识符〉})
-    void readStatement();
-    // 〈写语句〉 → write(〈标识符〉{，〈标识符〉})
-    void writeStatement();
+    bool readStatement();
+    // 〈写语句〉 → write(〈表达式〉{，〈表达式〉})
+    bool writeStatement();
     // 〈复合语句〉 → begin〈语句〉{ ；〈语句〉}〈end〉
-    void beginStatement();
+    bool beginStatement();
     // 〈分号〉
     void semicolon();
+    // ) 右括号
+    void rightBracket();
     // 〈表达式〉 → [+|-]〈项〉{〈加减运算符〉〈项〉}
     void expression();
     // 〈项〉 → 〈因子〉{〈乘除运算符〉〈因子〉}
     void term();
     // 〈因子〉 → 〈标识符〉|〈无符号整数〉|(〈表达式〉)
     void factor();
+    // 〈条件〉 → 〈表达式〉〈关系运算符〉〈表达式〉|odd〈表达式〉
+    void condition();
+
 };
 
 #endif //PL0_COMPILER_PARSER_H

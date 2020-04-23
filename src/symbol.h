@@ -25,6 +25,14 @@ public:
     {
     }
 
+    Symbol(SymbolType symbolType, std::string value): symbolType(std::move(symbolType)), value(std::move(value))
+    {
+    }
+
+    Symbol(SymbolType symbolType, int number): symbolType(std::move(symbolType)), number(number)
+    {
+    }
+
     friend std::ostream &operator<<(std::ostream &os, const Symbol &symbol)
     {
         os << "[symbolType: " <<  symbol.symbolType << ", value: " << symbol.value << ", number: " << symbol.number << "]";
@@ -65,6 +73,21 @@ public:
     {
         this->address = _address;
     }
+
+    void setValue(const std::string &_value)
+    {
+        this->value = _value;
+    }
+
+    void setSymbolType(const SymbolType &_symbolType)
+    {
+        this->symbolType = _symbolType;
+    }
+
+    void setNumber(int _number)
+    {
+        this->number = _number;
+    }
 private:
     SymbolType symbolType;
     std::string value = "";
@@ -96,7 +119,7 @@ const std::unordered_map<std::string, Symbol> KEYWORD_MAP({
 const std::unordered_map<std::string, Symbol> SIGN_MAP({
      /* 算符 */
     {SYMBOL::EQU.name,   Symbol(SYMBOL::EQU)},
-    {SYMBOL::LE.name,    Symbol(SYMBOL::LE)},
+    {SYMBOL::LS.name,    Symbol(SYMBOL::LS)},
     {SYMBOL::LEQ.name,   Symbol(SYMBOL::LEQ)},
     {SYMBOL::GT.name,    Symbol(SYMBOL::GT)},
     {SYMBOL::GEQ.name,   Symbol(SYMBOL::GEQ)},

@@ -15,9 +15,12 @@ class SymbolTable
 {
     std::vector<Symbol> symbolList;
     std::unordered_map<std::string, Symbol> symbolMap;
-    void addSymbol(Symbol symbol);
 
+public:
+    void addSymbol(const SymbolType& symbolType, const std::string &name, int number, int level, int address);
+    Symbol *getLastProcedure();
+    bool inTable(const std::string& name);
+    Symbol *getSymbol(const std::string &name);
 };
 
-
-#endif //PL0_COMPILER_SYMBOLTABLE_H
+#endif // PL0_COMPILER_SYMBOLTABLE_H

@@ -64,9 +64,8 @@ Symbol Lexer::getSymbol()
     char pk = peek();
     switch (str[0])
     {
-        case '<': if(pk == '=' || pk == '>') str += pk; break;
-        case '>': if(pk == '=') str += pk; break;
-        case ':': if(pk == '=') str += pk; break;
+        case '<': case '>': case ':':
+            if(pk == '=') str += pk; break;
     }
     auto it = SYMBOL::SIGN_MAP.find(str);
     logs("LOG[getSymbol: ToFind]", str, "\n");

@@ -12,14 +12,17 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 set(SOURCE_FILES
+        src/code.h
+        src/exceptionHandler.h
         src/lexer.cpp
         src/lexer.h
-        src/symbolType.h
-        src/symbol.h
-        src/utils.h
         src/parser.cpp
         src/parser.h
-        src/exceptionHandler.h
+        src/symbol.h
+        src/symbolTable.cpp
+        src/symbolTable.h
+        src/symbolType.h
+        src/utils.h
         )
 
 add_executable(PL0_Compiler ${SOURCE_FILES} src/main.cpp)
