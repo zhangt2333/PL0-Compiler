@@ -29,24 +29,29 @@ namespace EXCEPTION {
         NOT_A_PROCUDURE,
         NEVER_DECLARE,
     };
+    std::unordered_map<ParserExceptionEnum, std::string> EXCEPTION_ENUM_MAP({
+        {EXTRA_CHARACTERS, "There is extra char after '.' !"},
+        {EXTRA_CHARACTERS, "Here is missing a semicolon !"},
+        {MISSING_SEMICOLON, "Here is missing a identifier !"},
+        {MISSING_IDENTIFIER, "IDENTIFIER DUPLICATE !"},
+        {DUPLICATE_IDENTIFIER, "DUPLICATE_IDENTIFIER"},
+        {MISSING_EQUAL, "MISSING_EQUAL"},
+        {MISSING_CEQUAL, "MISSING_CEQUAL"},
+        {MISSING_NUMBER, "MISSING_NUMBER"},
+        {MISSING_THEN, "MISSING_THEN"},
+        {MISSING_DO, "MISSING_DO"},
+        {MISSING_LBR, "MISSING_LBR"},
+        {MISSING_RBR, "MISSING_RBR"},
+        {MISSING_END, "MISSING_END"},
+        {MISSING_SEMIC, "MISSING_SEMIC"},
+        {NOT_A_VAR, "NOT_A_VAR"},
+        {NOT_A_PROCUDURE, "NOT_A_PROCUDURE"},
+        {NEVER_DECLARE, "NEVER_DECLARE"}
+    });
+
     void handleException(EXCEPTION::ParserExceptionEnum parserExceptionEnum)
-    {
-        switch (parserExceptionEnum)
-        {
-            case EXCEPTION::EXTRA_CHARACTERS:
-                std::cerr << "There is extra char after '.' !";
-                break;
-            case EXCEPTION::MISSING_SEMICOLON:
-                std::cerr << "Here is missing a semicolon !";
-                break;
-            case EXCEPTION::MISSING_IDENTIFIER:
-                std::cerr << "Here is missing a identifier !";
-                break;
-            case EXCEPTION::DUPLICATE_IDENTIFIER:
-                std::cerr << "IDENTIFIER DUPLICATE !";
-                break;
-            // TODO: 异常消息
-        }
+    { // TODO: 更详细的异常信息、更方便的异常处理
+        std::cout << "-------------------"<< EXCEPTION_ENUM_MAP[parserExceptionEnum] << std::endl;
         exit(1);
     }
 };
