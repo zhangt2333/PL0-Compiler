@@ -46,12 +46,11 @@ Symbol Lexer::getSymbol()
         do
         {
             strToken.emplace_back(get());
-        }while(isalpha(peek()));
+        }while(isalpha(peek()) || isdigit(peek()));
         std::string value(strToken.begin(), strToken.end());
         auto it = SYMBOL::KEYWORD_MAP.find(value);
         return it != SYMBOL::KEYWORD_MAP.end() ? it->second : Symbol(SYMBOL::IDENTIFIER, value);
-    }
-    if (isdigit(peek()))
+    } else if (isdigit(peek()))
     {
         do
         {
@@ -65,7 +64,7 @@ Symbol Lexer::getSymbol()
     switch (str[0])
     {
         case '<': case '>': case ':':
-            if(pk == '=') str += pk; break;
+            if(pk == '=') str += get();
     }
     auto it = SYMBOL::SIGN_MAP.find(str);
     logs("LOG[getSymbol: ToFind]", str, "\n");
