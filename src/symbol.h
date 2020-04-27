@@ -33,6 +33,15 @@ public:
     {
     }
 
+    Symbol(SymbolType symbolType, std::string name, int _number, int _level, int _address):
+        symbolType(std::move(symbolType)),
+        value(std::move(name)),
+        number(_number),
+        level(_level),
+        address(_address)
+    {
+    }
+
     friend std::ostream &operator<<(std::ostream &os, const Symbol &symbol)
     {
         os << "[symbolType: " <<  symbol.symbolType << ", value: " << symbol.value << ", number: " << symbol.number << "]";

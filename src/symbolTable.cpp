@@ -5,36 +5,88 @@
  * symbolTable.cpp 2020/4/21
  * Comments: 
  */
+
+
+#include <iostream>
+#include <iomanip>
 #include "symbolTable.h"
-
-void SymbolTable::addSymbol(const SymbolType& symbolType, const std::string &name, int number, int level, int address)
-{
-    symbolList.emplace_back(symbolType);
-    symbolList.back().setValue(name);
-    symbolList.back().setNumber(number);
-    symbolList.back().setLevel(level);
-    symbolList.back().setAddress(address);
-    symbolMap[name] = symbolList.back();
-}
-
-Symbol *SymbolTable::getLastProcedure()
-{
-    for(int i=symbolList.size()-1; i>=0; i--)
-        if(SYMBOL::PROCEDURE == symbolList[i].getSymbolType())
-            return &symbolList[i];
-    return nullptr;
-}
 
 bool SymbolTable::inTable(const std::string& name)
 {
-    return symbolMap.find(name) != symbolMap.end();
+    return mp.find(name) != mp.end();
 }
 
-Symbol *SymbolTable::getSymbol(const std::string &name)
+void SymbolTable::addSymbol(Symbol* symbol)
 {
-    auto it = symbolMap.find(name);
-    if (it != symbolMap.end())
-        return &(it->second);
+    mp[symbol->getValue()] = symbol;
+    lst.push_back(symbol);
+}
+
+void SymbolTableManager::addSymbol(const SymbolType& symbolType, const std::string &name, int number, int level, int address)
+{
+    symbolTableStack.back()->addSymbol(new Symbol(symbolType, name, number, level, address));
+}
+
+Symbol *SymbolTableManager::getLastProcedure()
+{
+    for(auto *entity : symbolTableStack.back()->lst)
+        if(SYMBOL::PROCEDURE == entity->getSymbolType())
+            return entity;
     return nullptr;
+}
+
+bool SymbolTableManager::inTable(const std::string& name)
+{
+    return symbolTableStack.back()->inTable(name);
+}
+
+Symbol *SymbolTableManager::getSymbol(const std::string &name)
+{
+    for (auto *t : symbolTableStack)
+    {
+        auto it = t->mp.find(name);
+        if (it != t->mp.end())
+            return it->second;
+    }
+    return nullptr;
+}
+
+void SymbolTableManager::pushTable()
+{
+    symbolTableStack.push_back(new SymbolTable());
+    symbolTableList.push_back(symbolTableStack.back());
+}
+
+void SymbolTableManager::popTable()
+{
+    symbolTableStack.pop_back();
+}
+
+void SymbolTableManager::printTables()
+{
+    int idx = 0;
+    for (auto *t : symbolTableList)
+    {
+        std::cout << "TX" << idx++ << "->" << std::endl;
+        for (auto *symbol : t->lst)
+        {
+            std::cout << "NAME: ";
+            std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10) << symbol->getValue();
+            std::cout << "KIND: ";
+            std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getSymbolType().name;
+            if (SYMBOL::CONST == symbol->getSymbolType())
+            {
+                std::cout << "VAL: ";
+                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getNumber();
+            } else
+            {
+                std::cout << "LEVEL: ";
+                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getLevel();
+                std::cout << "ADR: ";
+                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getAddress();
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
