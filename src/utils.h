@@ -20,22 +20,12 @@ void dbg(T a, A... x) { std::cout << a << ' '; dbg(x...); }
 #define logv(...)
 #endif
 
-
-
 #include <vector>
 #include <cassert>
 #include <cctype>
 
-int vectorToInt(std::vector<char> &v)
-{
-    int num = 0;
-    for (char c : v)
-    {
-        assert(isdigit(c));
-        num = num * 10 + (c - '0');
-    }
-    return num;
-}
+int vectorToInt(std::vector<char> &v);
+
 
 
 #endif //PL0_COMPILER_UTILS_H

@@ -61,6 +61,9 @@ public:
 
     Code(CODE::CODE_TYPE _f, int _l, int _a) : f(_f), l(_l), a(_a)
     {}
+
+    Code(CODE::CODE_TYPE _f, int _a) : f(_f), a(_a)
+    {}
 };
 
 

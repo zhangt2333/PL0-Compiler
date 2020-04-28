@@ -13,32 +13,33 @@
 #include "symbolTable.h"
 #include "code.h"
 
-class parser
+class Parser
 {
     Lexer &lexer;
     int level = 0;
     int address = 3;
     SymbolType nowSymbolType = SYMBOL::ILLEGAL;
     Symbol nowSymbol = Symbol(nowSymbolType);
-    SymbolTable symbolTable;
+    SymbolTableManager symbolTable;
     std::vector<Code*> codeTable;
 public:
-    explicit parser(Lexer &lexer);
+    explicit Parser(Lexer &lexer);
+    // 〈程序〉→〈分程序〉.
+    void program();
+    void printTables() { symbolTable.printTables(); }
 
 private:
     void advance();
     void addressReset();
     int getCodeAddress();
 
-    // 〈程序〉→〈分程序〉
-    void program();
     // 〈分程序〉→ [〈常量说明部分〉][〈变量说明部分〉][〈过程说明部分〉]〈语句〉
     void subProbgram();
-    // 〈常量说明部分〉 → CONST〈常量定义〉{ ,〈常量定义〉}；
+    // 〈常量说明部分〉 → const〈常量定义〉{ ,〈常量定义〉}；
     void constDeclare();
     // 〈常量定义〉 → 〈标识符〉=〈无符号整数〉
     void constDefine();
-    // 〈变量说明部分〉 → VAR〈标识符〉{ ,〈标识符〉}；
+    // 〈变量说明部分〉 → var〈标识符〉{ ,〈标识符〉}；
     void varDeclare();
     // 〈过程说明部分〉 → 〈过程首部〉〈分程序〉；{〈过程说明部分〉}
     void procDeclare();
