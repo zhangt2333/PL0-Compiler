@@ -43,11 +43,9 @@ void Parser::program()
     logs("LOG[Parser: program]");
     /* 语义分析 */
     subProbgram();                      // 〈分程序〉
-    if (SYMBOL::POINT != nowSymbolType) // 异常处理: 缺少 '.'
-        EXCEPTION::handleException(EXCEPTION::MISSING_SEMICOLON);
+    ASSERT(SYMBOL::POINT == nowSymbolType, EXCEPTION::MISSING_SEMICOLON); // 异常处理: 缺少 '.'
     advance();                          // 跳过 '.'
-    if (!lexer.isEOF())                 // 异常处理: 文件尾 '.' 后还有字符
-        EXCEPTION::handleException(EXCEPTION::EXTRA_CHARACTERS);
+    ASSERT(lexer.isEOF(), EXCEPTION::EXTRA_CHARACTERS); // 异常处理: 文件尾 '.' 后还有字符
 }
 
 // 〈分程序〉→ [〈常量说明部分〉][〈变量说明部分〉][〈过程说明部分〉]〈语句〉
@@ -102,17 +100,13 @@ void Parser::constDeclare()
 void Parser::constDefine()
 {
     logs("LOG[Parser: constDefine]");
-    if (SYMBOL::IDENTIFIER != nowSymbolType) // 异常处理: 缺少标识符
-        EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
+    ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER); // 异常处理: 缺少标识符
     std::string constName = nowSymbol.getValue();
-    if (symbolTable.inTable(constName))      // 特判标识符重复声明
-        EXCEPTION::handleException(EXCEPTION::DUPLICATE_IDENTIFIER);
+    ASSERT(!symbolTable.inTable(constName), EXCEPTION::DUPLICATE_IDENTIFIER); // 特判标识符重复声明
     advance();                               // 跳过标识符
-    if (SYMBOL::EQU != nowSymbolType)        // 异常处理: 缺少 '='
-        EXCEPTION::handleException(EXCEPTION::MISSING_EQUAL);
+    ASSERT(SYMBOL::EQU == nowSymbolType, EXCEPTION::MISSING_EQUAL); // 异常处理: 缺少 '='
     advance();                               // 跳过 '='
-    if (SYMBOL::NUMBER != nowSymbolType)     // 异常处理: 缺少无符号整数
-        EXCEPTION::handleException(EXCEPTION::MISSING_NUMBER);
+    ASSERT(SYMBOL::NUMBER == nowSymbolType, EXCEPTION::MISSING_NUMBER); // 异常处理: 缺少无符号整数
     symbolTable.addSymbol(SYMBOL::CONST, constName, nowSymbol.getNumber(), level, address);
     advance();                               // 跳过 无符号整数
 }
@@ -126,11 +120,9 @@ void Parser::varDeclare()
         do
         {
             advance();                                  // 跳过 'var' or ','
-            if (SYMBOL::IDENTIFIER != nowSymbolType)    // 异常处理: 缺少标识符
-                EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
+            ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER); // 异常处理: 缺少标识符
             std::string varName = nowSymbol.getValue();
-            if (symbolTable.inTable(varName))           // 特判标识符重复声明
-                EXCEPTION::handleException(EXCEPTION::DUPLICATE_IDENTIFIER);
+            ASSERT(!symbolTable.inTable(varName), EXCEPTION::DUPLICATE_IDENTIFIER); // 特判标识符重复声明
             symbolTable.addSymbol(SYMBOL::VAR, varName, 0, level, address);
             address++;                                  // 地址++
             advance();                                  // 跳过 标识符
@@ -148,11 +140,9 @@ void Parser::procDeclare()
     {
         advance();                               // 跳过 'procedure'
 
-        if (SYMBOL::IDENTIFIER != nowSymbolType) // 异常处理: 缺少标识符
-            EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
+        ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER); // 异常处理: 缺少标识符
         std::string procName = nowSymbol.getValue();
-        if (symbolTable.inTable(procName))       // 特判标识符重复声明
-            EXCEPTION::handleException(EXCEPTION::DUPLICATE_IDENTIFIER);
+        ASSERT(!symbolTable.inTable(procName), EXCEPTION::DUPLICATE_IDENTIFIER);    // 特判标识符重复声明
 
         symbolTable.addSymbol(SYMBOL::PROCEDURE, procName, 0, level, address);
         address++;
@@ -190,13 +180,10 @@ bool Parser::assignStatement()
     {
         std::string varName = nowSymbol.getValue();
         Symbol *symbol = symbolTable.getSymbol(varName);
-        if (nullptr == symbol)                       // 异常处理: 缺少标识符
-            EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
-        if (SYMBOL::VAR != symbol->getSymbolType())  // 异常处理: 并非变量
-            EXCEPTION::handleException(EXCEPTION::NOT_A_VAR);
+        ASSERT(nullptr != symbol, EXCEPTION::MISSING_IDENTIFIER);          // 异常处理: 缺少标识符
+        ASSERT(SYMBOL::VAR == symbol->getSymbolType(), EXCEPTION::NOT_A_VAR); // 异常处理: 并非变量
         advance();                                   // 跳过 标识符
-        if (SYMBOL::CEQU != nowSymbolType)           // 异常处理: 缺少赋值号
-            EXCEPTION::handleException(EXCEPTION::MISSING_CEQUAL);
+        ASSERT(SYMBOL::CEQU == nowSymbolType, EXCEPTION::MISSING_CEQUAL); // 异常处理: 缺少赋值号
         advance();                                   // 跳过 ':='
         expression();
         /* 中间代码生成 */
@@ -215,8 +202,7 @@ bool Parser::ifStatement()
         /* 语义分析 */
         advance();                         // 跳过 'IF'
         condition();
-        if (SYMBOL::THEN != nowSymbolType) // 缺少 THEN
-            EXCEPTION::handleException(EXCEPTION::MISSING_THEN);
+        ASSERT(SYMBOL::THEN == nowSymbolType, EXCEPTION::MISSING_THEN); // 缺少 THEN
         advance();                         // 跳过 'THEN'
 
         /* 中间代码生成 */
@@ -248,8 +234,7 @@ bool Parser::whileStatement()
 
         /* 语义分析 */
         condition();
-        if (SYMBOL::DO != nowSymbolType)    // 缺少 DO
-            EXCEPTION::handleException(EXCEPTION::MISSING_DO);
+        ASSERT(SYMBOL::DO == nowSymbolType, EXCEPTION::MISSING_DO); // 缺少 DO
         advance(); // 跳过 'do'
 
         /* 中间代码生成 */
@@ -274,12 +259,10 @@ bool Parser::callStatement()
     {
         /* 语义分析 */
         advance();                               // 跳过 'CALL'
-        if (SYMBOL::IDENTIFIER != nowSymbolType) // 异常处理: 缺少标识符
-            EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
+        ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER);// 异常处理: 缺少标识符
         std::string procName = nowSymbol.getValue();
         Symbol *symbol = symbolTable.getSymbol(procName);
-        if (symbol == nullptr)                   // 并非过程
-            EXCEPTION::handleException(EXCEPTION::NOT_A_PROCUDURE);
+        ASSERT(nullptr != symbol, EXCEPTION::NOT_A_PROCUDURE); // 并非过程
         advance();                               // 跳过 '标识符'
 
         /* 中间代码生成 */
@@ -297,17 +280,14 @@ bool Parser::readStatement()
     {
         /* 语义分析 */
         advance();                                   // 跳过 'read'
-        if (SYMBOL::LBR != nowSymbolType)            // 异常处理: 缺少'('
-            EXCEPTION::handleException(EXCEPTION::MISSING_LBR);
+        ASSERT(SYMBOL::LBR == nowSymbolType, EXCEPTION::MISSING_LBR); // 异常处理: 缺少'('
         do
         {
             advance();                               // 跳过 '('、','
-            if (SYMBOL::IDENTIFIER != nowSymbolType)  // 异常处理: 缺少标识符
-                EXCEPTION::handleException(EXCEPTION::MISSING_IDENTIFIER);
+            ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER); // 异常处理: 缺少标识符
             std::string varName = nowSymbol.getValue();
             Symbol *symbol = symbolTable.getSymbol(varName);
-            if (nullptr == symbol || SYMBOL::VAR != symbol->getSymbolType()) // 并非变量
-                EXCEPTION::handleException(EXCEPTION::NOT_A_VAR);
+            ASSERT(nullptr != symbol && SYMBOL::VAR == symbol->getSymbolType(), EXCEPTION::NOT_A_VAR); // 并非变量
         /* 中间代码生成 */
             codeTable.push_back(new Code(CODE::OPR, OP::READ));                                  // 读一个数到栈顶
             codeTable.push_back(new Code(CODE::STO, level - symbol->getLevel(), symbol->getAddress()));// 把栈顶送到变量
@@ -328,8 +308,7 @@ bool Parser::writeStatement()
     {
         /* 语义分析 */
         advance();                       // 跳过 'write'
-        if (SYMBOL::LBR != nowSymbolType)// 异常处理: 缺少'('
-            EXCEPTION::handleException(EXCEPTION::MISSING_LBR);
+        ASSERT(SYMBOL::LBR == nowSymbolType, EXCEPTION::MISSING_LBR); // 异常处理: 缺少'('
         do
         {
             advance(); // 跳过 '('、','
@@ -356,8 +335,7 @@ bool Parser::beginStatement()
             advance();                    // 跳过 'begin' 或 ';'
             statement();
         } while (SYMBOL::SEMIC == nowSymbolType);
-        if (SYMBOL::END != nowSymbolType) // 异常处理: 缺少'end'
-            EXCEPTION::handleException(EXCEPTION::MISSING_END);
+        ASSERT(SYMBOL::END == nowSymbolType, EXCEPTION::MISSING_END); // 异常处理: 缺少'end'
         advance();                        // 跳过 'end'
         return true;
     }
@@ -368,16 +346,14 @@ bool Parser::beginStatement()
 void Parser::semicolon()
 {
     logs("LOG[Parser: semicolon]");
-    if (SYMBOL::SEMIC != nowSymbolType) // 异常处理: 缺少';'
-        EXCEPTION::handleException(EXCEPTION::MISSING_SEMIC);
+    ASSERT(SYMBOL::SEMIC == nowSymbolType, EXCEPTION::MISSING_SEMIC); // 异常处理: 缺少';'
     advance();                          // 跳过 ';'
 }
 
 void Parser::rightBracket()
 {
     logs("LOG[Parser: rightBracket]");
-    if (SYMBOL::RBR != nowSymbolType)  // 异常处理: 缺少';'
-        EXCEPTION::handleException(EXCEPTION::MISSING_RBR);
+    ASSERT(SYMBOL::RBR == nowSymbolType, EXCEPTION::MISSING_RBR); // 异常处理: 缺少';'
     advance();                         // 跳过 ')'
 }
 
@@ -431,8 +407,7 @@ void Parser::factor()
         std::string name = nowSymbol.getValue();
         advance();// 跳过标识符
         Symbol* symbol = symbolTable.getSymbol(name);
-        if (nullptr == symbol)
-            EXCEPTION::handleException(EXCEPTION::NEVER_DECLARE);  // 异常处理: 未声明
+        ASSERT(nullptr != symbol, EXCEPTION::NEVER_DECLARE);  // 异常处理: 未声明
         if (SYMBOL::CONST == symbol->getSymbolType())
             codeTable.push_back(new Code(CODE::LIT, symbol->getNumber()));        // 常量放入栈顶
         else if (SYMBOL::VAR == symbol->getSymbolType())

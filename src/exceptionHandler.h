@@ -11,7 +11,7 @@
 #include <iostream>
 
 namespace EXCEPTION {
-    enum ParserExceptionEnum{
+    enum ExceptionEnum{
         EXTRA_CHARACTERS,
         MISSING_SEMICOLON,
         MISSING_IDENTIFIER,
@@ -29,11 +29,11 @@ namespace EXCEPTION {
         NOT_A_PROCUDURE,
         NEVER_DECLARE,
     };
-    std::unordered_map<ParserExceptionEnum, std::string> EXCEPTION_ENUM_MAP({
+    std::unordered_map<ExceptionEnum, std::string> EXCEPTION_ENUM_MAP({
         {EXTRA_CHARACTERS, "There is extra char after '.' !"},
         {EXTRA_CHARACTERS, "Here is missing a semicolon !"},
         {MISSING_SEMICOLON, "Here is missing a identifier !"},
-        {MISSING_IDENTIFIER, "IDENTIFIER DUPLICATE !"},
+        {MISSING_IDENTIFIER, "MISSING_IDENTIFIER !"},
         {DUPLICATE_IDENTIFIER, "DUPLICATE_IDENTIFIER"},
         {MISSING_EQUAL, "MISSING_EQUAL"},
         {MISSING_CEQUAL, "MISSING_CEQUAL"},
@@ -49,12 +49,13 @@ namespace EXCEPTION {
         {NEVER_DECLARE, "NEVER_DECLARE"}
     });
 
-    void handleException(EXCEPTION::ParserExceptionEnum parserExceptionEnum)
-    { // TODO: 更详细的异常信息、更方便的异常处理
-        std::cout << "-------------------"<< EXCEPTION_ENUM_MAP[parserExceptionEnum] << std::endl;
-        exit(1);
-    }
 };
+void ASSERT(bool _, EXCEPTION::ExceptionEnum parserExceptionEnum)
+{ // TODO: 更详细的异常信息、更方便的异常处理
+    if (_) return;
+    std::cout << "-------------------"<< EXCEPTION::EXCEPTION_ENUM_MAP[parserExceptionEnum] << std::endl;
+    exit(1);
+}
 
 
 #endif //PL0_COMPILER_EXCEPTIONHANDLER_H
