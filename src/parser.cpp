@@ -21,6 +21,15 @@ Parser::Parser(Lexer &lexer) : lexer(lexer)
 // 取下一个 词
 void Parser::advance()
 {
+    if (SYMBOL::ILLEGAL != nowSymbolType)
+    {
+        if (!nowSymbol.getValue().empty())
+            syntaxTree.merge(nowSymbol.getValue());
+        else if(-1 != nowSymbol.getNumber())
+            syntaxTree.merge(std::to_string(nowSymbol.getNumber()));
+        else
+            syntaxTree.merge(nowSymbolType.name);
+    }
     nowSymbol = lexer.getSymbol();
     nowSymbolType = nowSymbol.getSymbolType();
     logs("LOG[Parser: advance] ", nowSymbol);
@@ -41,17 +50,23 @@ int Parser::getCodeAddress()
 void Parser::program()
 {
     logs("LOG[Parser: program]");
+    syntaxTree.begin("[program]");
+
     /* 语义分析 */
     subProbgram();                      // 〈分程序〉
     ASSERT(SYMBOL::POINT == nowSymbolType, EXCEPTION::MISSING_SEMICOLON); // 异常处理: 缺少 '.'
     advance();                          // 跳过 '.'
     ASSERT(lexer.isEOF(), EXCEPTION::EXTRA_CHARACTERS); // 异常处理: 文件尾 '.' 后还有字符
+
+    syntaxTree.end();
 }
 
 // 〈分程序〉→ [〈常量说明部分〉][〈变量说明部分〉][〈过程说明部分〉]〈语句〉
 void Parser::subProbgram()
 {
     logs("LOG[Parser: subProbgram]");
+    syntaxTree.begin("[subProbgram]");
+
     /* 中间代码生成 */
     int addressTemp = address; // 保存 address
     addressReset();
@@ -76,12 +91,16 @@ void Parser::subProbgram()
     /* 中间代码生成 */
     codeTable.push_back(new Code(CODE::OPR, OP::RET)); // 过程结束, 返回调用点
     address = addressTemp;
+
+    syntaxTree.end();
 }
 
 // 〈常量说明部分〉 → const〈常量定义〉{ ,〈常量定义〉}；
 void Parser::constDeclare()
 {
     logs("LOG[Parser: constDeclare]");
+    syntaxTree.begin("[constDeclare]");
+
     if (SYMBOL::CONST == nowSymbolType)
     { // const
         advance();     // 跳过 'const'
@@ -93,6 +112,8 @@ void Parser::constDeclare()
         }
         semicolon();
     }
+
+    syntaxTree.end();
 }
 
 // 〈常量定义〉 → 〈标识符〉=〈无符号整数〉
@@ -100,6 +121,8 @@ void Parser::constDeclare()
 void Parser::constDefine()
 {
     logs("LOG[Parser: constDefine]");
+    syntaxTree.begin("[constDefine]");
+
     ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER); // 异常处理: 缺少标识符
     std::string constName = nowSymbol.getValue();
     ASSERT(!symbolTable.inTable(constName), EXCEPTION::DUPLICATE_IDENTIFIER); // 特判标识符重复声明
@@ -109,12 +132,16 @@ void Parser::constDefine()
     ASSERT(SYMBOL::NUMBER == nowSymbolType, EXCEPTION::MISSING_NUMBER); // 异常处理: 缺少无符号整数
     symbolTable.addSymbol(SYMBOL::CONST, constName, nowSymbol.getNumber(), level, address);
     advance();                               // 跳过 无符号整数
+
+    syntaxTree.end();
 }
 
 // 〈变量说明部分〉 → var〈标识符〉{ ,〈标识符〉}；
 void Parser::varDeclare()
 {
     logs("LOG[Parser: varDeclare]");
+    syntaxTree.begin("[varDeclare]");
+
     if (SYMBOL::VAR == nowSymbolType)
     {
         do
@@ -129,6 +156,8 @@ void Parser::varDeclare()
         } while (SYMBOL::COMMA == nowSymbolType);
         semicolon();                                    // 跳过 ';'
     }
+
+    syntaxTree.end();
 }
 
 // 〈过程说明部分〉 → 〈过程首部〉〈分程序〉；{〈过程说明部分〉}
@@ -136,6 +165,8 @@ void Parser::varDeclare()
 void Parser::procDeclare()
 {
     logs("LOG[Parser: procDeclare]");
+    syntaxTree.begin("[procDeclare]");
+
     while (SYMBOL::PROCEDURE == nowSymbolType)
     {
         advance();                               // 跳过 'procedure'
@@ -156,6 +187,8 @@ void Parser::procDeclare()
         level--;
         semicolon();                            // 跳过 ';'
     }
+
+    syntaxTree.end();
 }
 
 // 〈语句〉 → 〈赋值语句〉|〈条件语句〉|〈当型循环语句〉|〈过程调用语句〉|〈读语句〉|〈写语句〉|〈复合语句〉|〈空〉
@@ -178,6 +211,7 @@ bool Parser::assignStatement()
     logs("LOG[Parser: assignStatement]");
     if (SYMBOL::IDENTIFIER == nowSymbolType)
     {
+        syntaxTree.begin("[assignStatement]");
         std::string varName = nowSymbol.getValue();
         Symbol *symbol = symbolTable.getSymbol(varName);
         ASSERT(nullptr != symbol, EXCEPTION::MISSING_IDENTIFIER);          // 异常处理: 缺少标识符
@@ -188,6 +222,7 @@ bool Parser::assignStatement()
         expression();
         /* 中间代码生成 */
         codeTable.push_back(new Code(CODE::STO, level - symbol->getLevel(), symbol->getAddress())); // 赋值
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -199,6 +234,8 @@ bool Parser::ifStatement()
     logs("LOG[Parser: ifStatement]");
     if (SYMBOL::IF == nowSymbolType)
     {
+        syntaxTree.begin("[ifStatement]");
+
         /* 语义分析 */
         advance();                         // 跳过 'IF'
         condition();
@@ -215,6 +252,7 @@ bool Parser::ifStatement()
         /* 中间代码生成 */
         jpc->setA(getCodeAddress());   // 回填地址
 
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -226,6 +264,8 @@ bool Parser::whileStatement()
     logs("LOG[Parser: whileStatement]");
     if (SYMBOL::WHILE == nowSymbolType)
     {
+        syntaxTree.begin("[whileStatement]");
+
         /* 语义分析 */
         advance();                          // 跳过 'while'
 
@@ -246,6 +286,7 @@ bool Parser::whileStatement()
         codeTable.push_back(new Code(CODE::JMP, whileBeginAddress)); // 无条件跳转
         jpc->setA(getCodeAddress());
 
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -257,6 +298,8 @@ bool Parser::callStatement()
     logs("LOG[Parser: callStatement]");
     if (SYMBOL::CALL == nowSymbolType)
     {
+        syntaxTree.begin("[callStatement]");
+
         /* 语义分析 */
         advance();                               // 跳过 'CALL'
         ASSERT(SYMBOL::IDENTIFIER == nowSymbolType, EXCEPTION::MISSING_IDENTIFIER);// 异常处理: 缺少标识符
@@ -267,6 +310,8 @@ bool Parser::callStatement()
 
         /* 中间代码生成 */
         codeTable.push_back(new Code(CODE::CAL, level - symbol->getLevel(), symbol->getAddress()));
+
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -278,6 +323,8 @@ bool Parser::readStatement()
     logs("LOG[Parser: readStatement]");
     if (SYMBOL::READ == nowSymbolType)
     {
+        syntaxTree.begin("[readStatement]");
+
         /* 语义分析 */
         advance();                                   // 跳过 'read'
         ASSERT(SYMBOL::LBR == nowSymbolType, EXCEPTION::MISSING_LBR); // 异常处理: 缺少'('
@@ -295,6 +342,8 @@ bool Parser::readStatement()
             advance(); // 跳过 标识符
         } while (SYMBOL::COMMA == nowSymbolType);
         rightBracket(); // 跳过 ')'
+
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -306,6 +355,8 @@ bool Parser::writeStatement()
     logs("LOG[Parser: writeStatement]");
     if (SYMBOL::WRITE == nowSymbolType)
     {
+        syntaxTree.begin("[writeStatement]");
+
         /* 语义分析 */
         advance();                       // 跳过 'write'
         ASSERT(SYMBOL::LBR == nowSymbolType, EXCEPTION::MISSING_LBR); // 异常处理: 缺少'('
@@ -319,6 +370,8 @@ bool Parser::writeStatement()
         codeTable.push_back(new Code(CODE::OPR, OP::LINE)); // 输出 换行
         /* 语义分析 */
         rightBracket(); // 跳过 ')'
+
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -330,6 +383,8 @@ bool Parser::beginStatement()
     logs("LOG[Parser: beginStatement]");
     if (SYMBOL::BEGIN == nowSymbolType)
     {
+        syntaxTree.begin("[beginStatement]");
+
         do
         {
             advance();                    // 跳过 'begin' 或 ';'
@@ -337,6 +392,8 @@ bool Parser::beginStatement()
         } while (SYMBOL::SEMIC == nowSymbolType);
         ASSERT(SYMBOL::END == nowSymbolType, EXCEPTION::MISSING_END); // 异常处理: 缺少'end'
         advance();                        // 跳过 'end'
+
+        syntaxTree.end();
         return true;
     }
     return false;
@@ -362,6 +419,8 @@ void Parser::rightBracket()
 void Parser::expression()
 {
     logs("LOG[Parser: expression]");
+    syntaxTree.begin("[expression]");
+
     SymbolType op = nowSymbolType;
     if (SYMBOL::ADD == nowSymbolType || SYMBOL::SUB == nowSymbolType)
         advance();         // 跳过 '+' / '-'
@@ -378,6 +437,8 @@ void Parser::expression()
         else                   // 栈顶两个元素弹出，次栈顶减去栈顶结果进栈
             codeTable.push_back(new Code(CODE::OPR, OP::SUB));
     }
+
+    syntaxTree.end();
 }
 
 // 〈项〉 → 〈因子〉{〈乘除运算符〉〈因子〉}
@@ -385,6 +446,8 @@ void Parser::expression()
 void Parser::term()
 {
     logs("LOG[Parser: term]");
+    syntaxTree.begin("[term]");
+
     factor();
     while (SYMBOL::MUL == nowSymbolType || SYMBOL::DIV == nowSymbolType)
     {
@@ -396,12 +459,16 @@ void Parser::term()
         else                   // 栈顶两个元素弹出，次栈顶除以栈顶结果进栈
             codeTable.push_back(new Code(CODE::OPR, OP::DIV));
     }
+
+    syntaxTree.end();
 }
 
 // 〈因子〉 → 〈标识符〉|〈无符号整数〉| (〈表达式〉)
 void Parser::factor()
 {
     logs("LOG[Parser: factor]");
+    syntaxTree.begin("[factor]");
+
     if (SYMBOL::IDENTIFIER == nowSymbolType)
     {
         std::string name = nowSymbol.getValue();
@@ -422,6 +489,8 @@ void Parser::factor()
         expression();
         rightBracket();
     }
+
+    syntaxTree.end();
 }
 
 // 〈条件〉 → 〈表达式〉〈关系运算符〉〈表达式〉| odd〈表达式〉
@@ -429,6 +498,8 @@ void Parser::factor()
 void Parser::condition()
 {
     logs("LOG[Parser: condition]");
+    syntaxTree.begin("[condition]");
+
     if (SYMBOL::ODD == nowSymbolType)
     {
         advance(); // 跳过 'odd'
@@ -453,6 +524,8 @@ void Parser::condition()
         else if(SYMBOL::GEQ == op)
             codeTable.push_back(new Code(CODE::OPR, OP::GEQ));
     }
+
+    syntaxTree.end();
 }
 
 

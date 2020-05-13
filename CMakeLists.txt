@@ -22,6 +22,8 @@ set(SOURCE_FILES
         src/symbolTable.cpp
         src/symbolTable.h
         src/symbolType.h
+        src/syntaxTree.cpp
+        src/syntaxTree.h
         src/utils.cpp
         src/utils.h
         )

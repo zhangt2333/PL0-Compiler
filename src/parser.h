@@ -12,6 +12,7 @@
 #include "lexer.h"
 #include "symbolTable.h"
 #include "code.h"
+#include "syntaxTree.h"
 
 class Parser
 {
@@ -23,6 +24,7 @@ class Parser
     SymbolTableManager symbolTable;
     std::vector<Code*> codeTable;
 public:
+    SyntaxTree syntaxTree;
     explicit Parser(Lexer &lexer);
     // 〈程序〉→〈分程序〉.
     void program();

@@ -10,5 +10,6 @@ int main(int argc, char **argv)
     Parser parser(lexer);
     parser.program();
     parser.printTables();
+    parser.syntaxTree.print();
     return 0;
 }
