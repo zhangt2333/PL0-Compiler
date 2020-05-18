@@ -81,8 +81,8 @@ void Parser::subProbgram()
 
     /* 中间代码生成 */
     jmp->setA(getCodeAddress());                            // 过程体的目标代码生成后, 返填过程体的入口地址
-    codeTable.push_back(new Code(CODE::INT, address));// 申请栈空间，大小即 address=3+常量声明+变量声明
-    if (procedure != nullptr)                                  // 不是主函数，那该过程的起始语句的地址要保存在符号表中
+    codeTable.push_back(new Code(CODE::INT, address));      // 申请栈空间，大小即 address=3+常量声明+变量声明
+    if (procedure != nullptr)                                  // 不是主函数，那该过程的起始语句的地址要保存在符号表
         procedure->setAddress(getCodeAddress() - 1);   // 起始语句即上一句INT指令
 
     /* 语义分析 */
@@ -526,6 +526,13 @@ void Parser::condition()
     }
 
     syntaxTree.end();
+}
+
+void Parser::printCode()
+{
+    int index = 0;
+    for (auto x: codeTable)
+        std::cout << index++ << '\t' << (*x) << std::endl;
 }
 
 

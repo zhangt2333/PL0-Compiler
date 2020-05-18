@@ -21,14 +21,15 @@ class Parser
     int address = 3;
     SymbolType nowSymbolType = SYMBOL::ILLEGAL;
     Symbol nowSymbol = Symbol(nowSymbolType);
+public:
     SymbolTableManager symbolTable;
     std::vector<Code*> codeTable;
-public:
     SyntaxTree syntaxTree;
     explicit Parser(Lexer &lexer);
+    void printTables() { symbolTable.printTables(); }
+    void printCode();
     // 〈程序〉→〈分程序〉.
     void program();
-    void printTables() { symbolTable.printTables(); }
 
 private:
     void advance();
