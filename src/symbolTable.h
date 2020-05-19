@@ -24,7 +24,7 @@ public:
 class SymbolTableManager
 {
     std::list<SymbolTable*> symbolTableStack;  // 符号表 栈
-    std::list<SymbolTable*> symbolTableList; // 符号表 数组
+    std::list<SymbolTable*> symbolTableList;   // 符号表 数组
 public:
     SymbolTableManager()
     {

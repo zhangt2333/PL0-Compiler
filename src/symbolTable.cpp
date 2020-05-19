@@ -11,31 +11,32 @@
 #include <iomanip>
 #include "symbolTable.h"
 
-bool SymbolTable::inTable(const std::string& name)
+bool SymbolTable::inTable(const std::string &name)
 {
     return mp.find(name) != mp.end();
 }
 
-void SymbolTable::addSymbol(Symbol* symbol)
+void SymbolTable::addSymbol(Symbol *symbol)
 {
     mp[symbol->getValue()] = symbol;
     lst.push_back(symbol);
 }
 
-void SymbolTableManager::addSymbol(const SymbolType& symbolType, const std::string &name, int number, int level, int address)
+void SymbolTableManager::addSymbol(const SymbolType &symbolType, const std::string &name, int number, int level, int address)
 {
     symbolTableStack.back()->addSymbol(new Symbol(symbolType, name, number, level, address));
 }
 
 Symbol *SymbolTableManager::getLastProcedure()
 {
-    for(auto *entity : symbolTableStack.back()->lst)
-        if(SYMBOL::PROCEDURE == entity->getSymbolType())
-            return entity;
+    for (auto it = symbolTableList.rbegin(); it != symbolTableList.rend(); it++)
+        for (auto it2 =  (*it)->lst.rbegin(); it2 != (*it)->lst.rend(); it2++)
+            if (SYMBOL::PROCEDURE == (*it2)->getSymbolType())
+                return *it2;
     return nullptr;
 }
 
-bool SymbolTableManager::inTable(const std::string& name)
+bool SymbolTableManager::inTable(const std::string &name)
 {
     return symbolTableStack.back()->inTable(name);
 }
@@ -73,17 +74,21 @@ void SymbolTableManager::printTables()
             std::cout << "NAME: ";
             std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10) << symbol->getValue();
             std::cout << "KIND: ";
-            std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getSymbolType().name;
+            std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10)
+                      << symbol->getSymbolType().name;
             if (SYMBOL::CONST == symbol->getSymbolType())
             {
                 std::cout << "VAL: ";
-                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getNumber();
+                std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10)
+                          << symbol->getNumber();
             } else
             {
                 std::cout << "LEVEL: ";
-                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getLevel();
+                std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10)
+                          << symbol->getLevel();
                 std::cout << "ADR: ";
-                std::cout << std::setiosflags(std::ios::left)  << std::setfill(' ') << std::setw(10) << symbol->getAddress();
+                std::cout << std::setiosflags(std::ios::left) << std::setfill(' ') << std::setw(10)
+                          << symbol->getAddress();
             }
             std::cout << std::endl;
         }
