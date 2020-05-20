@@ -26,6 +26,8 @@ set(SOURCE_FILES
         src/syntaxTree.h
         src/utils.cpp
         src/utils.h
+        src/vm.cpp
+        src/vm.h
         )
 
 add_executable(PL0_Compiler ${SOURCE_FILES} src/main.cpp)

@@ -2,6 +2,7 @@
 #include <fstream>
 #include "lexer.h"
 #include "parser.h"
+#include "vm.h"
 
 int main(int argc, char **argv)
 {
@@ -11,5 +12,8 @@ int main(int argc, char **argv)
     parser.program();
     parser.printTables();
     parser.syntaxTree.print();
+    parser.printCode();
+    VM vm(parser.codeTable);
+    vm.run();
     return 0;
 }
