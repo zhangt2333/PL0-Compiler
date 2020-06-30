@@ -1,6 +1,5 @@
 # PL0-Compiler
 
-------
 
 PL0 Compiler, which is my experiment on *Compilation Principle*.
 
@@ -46,6 +45,6 @@ Project Tree:
     └── PL0_code6.in
 ```
 
-For the task details: [Task Details in Chinese](https://github.com/zhangt2333/PL0-Compiler/taskDetails.md)
+For the task details: [Task Details in Chinese](https://github.com/zhangt2333/PL0-Compiler/blob/master/taskDetails.md)
 
-For the project details: [MyReport in Chinese](https://github.com/zhangt2333/PL0-Compiler/report.pdf)
+For the project details: [MyReport in Chinese](https://github.com/zhangt2333/PL0-Compiler/blob/master/report.pdf)
