@@ -54,7 +54,8 @@ namespace OP
         GEQ = 11,  // 栈顶两个元素弹出，判次栈顶小于等于栈顶结果进栈
         WRITE = 14,// 栈顶值输出至屏幕
         LINE = 15, // 屏幕输出换行
-        READ = 16  // 从命令行读一个数到栈顶
+        READ = 16, // 从命令行读一个数到栈顶
+        ODD = 17,  // 弹出栈顶，判断是否为奇数，结果进栈
     };
     const std::unordered_map<int, std::string> OP_TYPE_MAP({
         {RET, "RET"},

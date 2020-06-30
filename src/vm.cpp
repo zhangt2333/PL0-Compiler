@@ -54,12 +54,12 @@ void VM::run()
             case CODE::JMP:
                 pc = code->getA();
                 break;
-                // 有条件跳转
+            // 有条件跳转
             case CODE::JPC:
                 if (stack[top - 1] == 0)
                     pc = code->getA();
                 break;
-                // 操作
+            // 操作
             case CODE::OPR:
                 this->opr();
                 break;
@@ -128,6 +128,9 @@ void VM::opr()
         case OP::READ:
             std::cout << "Please Input: ";
             std::cin >> stack[top++];
+            break;
+        case OP::ODD:
+            stack[top - 1] &= 1;
             break;
     }
 }

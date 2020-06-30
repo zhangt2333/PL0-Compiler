@@ -53,7 +53,7 @@ namespace EXCEPTION {
 void ASSERT(bool _, EXCEPTION::ExceptionEnum parserExceptionEnum)
 { // TODO: 更详细的异常信息、更方便的异常处理
     if (_) return;
-    std::cout << "-------------------"<< EXCEPTION::EXCEPTION_ENUM_MAP[parserExceptionEnum] << std::endl;
+    std::cout << "-------------------" << EXCEPTION::EXCEPTION_ENUM_MAP[parserExceptionEnum] << std::endl;
     exit(1);
 }
 

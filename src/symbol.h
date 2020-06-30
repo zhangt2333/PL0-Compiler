@@ -44,7 +44,11 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Symbol &symbol)
     {
-        os << "[symbolType: " <<  symbol.symbolType << ", value: " << symbol.value << ", number: " << symbol.number << "]";
+        os << symbol.symbolType.name;
+        if (!symbol.value.empty())
+            os << '(' << symbol.value << ')';
+        else if(-1 != symbol.number)
+            os << '(' << symbol.number << ')';
         return os;
     }
 

@@ -20,15 +20,12 @@ class Lexer
 public:
     Lexer(std::istream &_inputStream) : inputStream(_inputStream)
     {}
-
     Symbol getSymbol();
     bool isEOF();
 
 private:
     std::istream &inputStream;
-
     char get();
-
     char peek();
 };
 

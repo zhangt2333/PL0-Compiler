@@ -5,7 +5,7 @@
  * parser.cpp 2020/4/19
  * Comments: 
  */
-#define DEBUG    // 调试模式
+//#define DEBUG    // 调试模式
 
 
 #include "parser.h"
@@ -504,7 +504,7 @@ void Parser::condition()
     {
         advance(); // 跳过 'odd'
         expression();
-        codeTable.push_back(new Code(CODE::OPR, OP::LEQ)); // TODO: 奇偶判断
+        codeTable.push_back(new Code(CODE::OPR, OP::ODD));
     }else
     {
         expression();
